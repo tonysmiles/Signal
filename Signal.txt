@@ -1,0 +1,37 @@
+//@version=2
+study(title = "Signal ??", shorttitle = "Signal ??")
+
+trungbinh = 9
+trungbinh2 = 26
+trungbinh3 = 52
+src = close
+upperband=80
+lowerband=-80
+
+ord(seq, idx, itv) =>
+    p = seq[idx]
+    o = 1
+    for i = 0 to itv - 1
+        if p < seq[i]
+            o := o + 1
+    o
+
+d(itv) =>
+    sum = 0.0
+    for i = 0 to itv - 1
+        sum := sum + pow((i + 1) - ord(src, i, itv), 2)
+    sum
+
+tb(itv) => (1.0 - 6.0 * d(itv) / (itv * (itv * itv - 1.0))) * 100.0
+
+hline(upperband,color=gray,linestyle=dashed)
+hline(lowerband,color=gray,linestyle=dashed)
+plot(tb(trungbinh), title = "Ng?n h?n", color = green,transp = 0, linewidth = 1)
+plot(tb(trungbinh2), title = "Trung h?n", color = yellow,transp = 0, linewidth = 2)
+plot(tb(trungbinh3), title = "Dài h?n", color = red,transp = 0, linewidth = 3)
+long = crossover(tb(trungbinh),-80) 
+short = crossunder(tb(trungbinh),80)
+plotshape(long,style=shape.triangleup, location=location.bottom, color=blue, title= "crossUp")
+plotshape(short,style=shape.triangledown, location=location.top, color=red, title= "crossDown")
+alertcondition(crossunder(tb(trungbinh),lowerband),title="Tang giá",message="Tín hi?u tang giá" )
+alertcondition(crossover(tb(trungbinh),upperband),title="Gi?m giá",message="Tín hi?u gi?m giá" )
